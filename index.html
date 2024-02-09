@@ -1,0 +1,2370 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/WESTBENGALBOUNDARY_1.js"></script>
+        <script src="data/SILIGURIBOUNDARY_2.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_3.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_4.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_5.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_6.js"></script>
+        <script src="data/SILIGURIGRAVITYCENTER_7.js"></script>
+        <script src="data/KOLKATABOUNDARY_8.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_9.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_10.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_11.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_12.js"></script>
+        <script src="data/KOLKATAGRAVITYCENTER_13.js"></script>
+        <script src="data/HOWRAHBOUNDARY_14.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_15.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_16.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_17.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_18.js"></script>
+        <script src="data/HOWRAHGRAVITYCENTER_19.js"></script>
+        <script src="data/DURGAPURBOUNDARY_20.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_21.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_22.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_23.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_24.js"></script>
+        <script src="data/DURGAPURGRAVITYCENTER_25.js"></script>
+        <script src="data/CHANDANNAGARBOUNDARY_26.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_27.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_28.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_29.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_30.js"></script>
+        <script src="data/CHANDANNAGARGRAVITYCENTER_31.js"></script>
+        <script src="data/BIDHANNAGARBOUNDARY_32.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_33.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_34.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_35.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_36.js"></script>
+        <script src="data/BIDHANNAGARGRAVITYCENTER_37.js"></script>
+        <script src="data/ASANSOLBOUNDARY_38.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2021_39.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2011_40.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE2001_41.js"></script>
+        <script src="data/STANDARDDEVIATIONELLIPSE1991_42.js"></script>
+        <script src="data/ASANSOLGRAVITYCENTER_43.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[20.382055404382058,80.46527694151106],[26.627539909109807,96.50407285235153]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_OpenStreetMap_0');
+        map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+        var layer_OpenStreetMap_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OpenStreetMap_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        function pop_WESTBENGALBOUNDARY_1(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_WESTBENGALBOUNDARY_1_0() {
+            return {
+                pane: 'pane_WESTBENGALBOUNDARY_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,113,88,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_WESTBENGALBOUNDARY_1');
+        map.getPane('pane_WESTBENGALBOUNDARY_1').style.zIndex = 401;
+        map.getPane('pane_WESTBENGALBOUNDARY_1').style['mix-blend-mode'] = 'normal';
+        var layer_WESTBENGALBOUNDARY_1 = new L.geoJson(json_WESTBENGALBOUNDARY_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_WESTBENGALBOUNDARY_1',
+            layerName: 'layer_WESTBENGALBOUNDARY_1',
+            pane: 'pane_WESTBENGALBOUNDARY_1',
+            onEachFeature: pop_WESTBENGALBOUNDARY_1,
+            style: style_WESTBENGALBOUNDARY_1_0,
+        });
+        bounds_group.addLayer(layer_WESTBENGALBOUNDARY_1);
+        map.addLayer(layer_WESTBENGALBOUNDARY_1);
+        function pop_SILIGURIBOUNDARY_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Id</th>\
+                        <td class="visible-with-data" id="Id">' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_SILIGURIBOUNDARY_2_0() {
+            return {
+                pane: 'pane_SILIGURIBOUNDARY_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,158,23,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_SILIGURIBOUNDARY_2');
+        map.getPane('pane_SILIGURIBOUNDARY_2').style.zIndex = 402;
+        map.getPane('pane_SILIGURIBOUNDARY_2').style['mix-blend-mode'] = 'normal';
+        var layer_SILIGURIBOUNDARY_2 = new L.geoJson(json_SILIGURIBOUNDARY_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_SILIGURIBOUNDARY_2',
+            layerName: 'layer_SILIGURIBOUNDARY_2',
+            pane: 'pane_SILIGURIBOUNDARY_2',
+            onEachFeature: pop_SILIGURIBOUNDARY_2,
+            style: style_SILIGURIBOUNDARY_2_0,
+        });
+        bounds_group.addLayer(layer_SILIGURIBOUNDARY_2);
+        map.addLayer(layer_SILIGURIBOUNDARY_2);
+        function pop_STANDARDDEVIATIONELLIPSE2021_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_3_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_3',
+                opacity: 1,
+                color: 'rgba(255,127,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_3');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_3').style.zIndex = 403;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_3').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_3 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_3',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_3',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_3',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_3,
+            style: style_STANDARDDEVIATIONELLIPSE2021_3_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_3);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_3);
+        function pop_STANDARDDEVIATIONELLIPSE2011_4(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_4_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_4',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,207,80,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_4');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_4').style.zIndex = 404;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_4').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_4 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_4',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_4',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_4',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_4,
+            style: style_STANDARDDEVIATIONELLIPSE2011_4_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_4);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_4);
+        function pop_STANDARDDEVIATIONELLIPSE2001_5(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_5_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_5',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_5');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_5').style.zIndex = 405;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_5').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_5 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_5',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_5',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_5',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_5,
+            style: style_STANDARDDEVIATIONELLIPSE2001_5_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_5);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_5);
+        function pop_STANDARDDEVIATIONELLIPSE1991_6(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_6_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_6',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,158,23,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_6');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_6').style.zIndex = 406;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_6').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_6 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_6',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_6',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_6',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_6,
+            style: style_STANDARDDEVIATIONELLIPSE1991_6_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_6);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_6);
+        function pop_SILIGURIGRAVITYCENTER_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">YEAR</th>\
+                        <td class="visible-with-data" id="YEAR">' + (feature.properties['YEAR'] !== null ? autolinker.link(feature.properties['YEAR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_SILIGURIGRAVITYCENTER_7_0(feature) {
+            switch(String(feature.properties['YEAR'])) {
+                case '1991':
+                    return {
+                pane: 'pane_SILIGURIGRAVITYCENTER_7',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_SILIGURIGRAVITYCENTER_7',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_SILIGURIGRAVITYCENTER_7',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2022':
+                    return {
+                pane: 'pane_SILIGURIGRAVITYCENTER_7',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,128,1,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_SILIGURIGRAVITYCENTER_7');
+        map.getPane('pane_SILIGURIGRAVITYCENTER_7').style.zIndex = 407;
+        map.getPane('pane_SILIGURIGRAVITYCENTER_7').style['mix-blend-mode'] = 'normal';
+        var layer_SILIGURIGRAVITYCENTER_7 = new L.geoJson(json_SILIGURIGRAVITYCENTER_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_SILIGURIGRAVITYCENTER_7',
+            layerName: 'layer_SILIGURIGRAVITYCENTER_7',
+            pane: 'pane_SILIGURIGRAVITYCENTER_7',
+            onEachFeature: pop_SILIGURIGRAVITYCENTER_7,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_SILIGURIGRAVITYCENTER_7_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_SILIGURIGRAVITYCENTER_7);
+        map.addLayer(layer_SILIGURIGRAVITYCENTER_7);
+        function pop_KOLKATABOUNDARY_8(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_KOLKATABOUNDARY_8_0() {
+            return {
+                pane: 'pane_KOLKATABOUNDARY_8',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_KOLKATABOUNDARY_8');
+        map.getPane('pane_KOLKATABOUNDARY_8').style.zIndex = 408;
+        map.getPane('pane_KOLKATABOUNDARY_8').style['mix-blend-mode'] = 'normal';
+        var layer_KOLKATABOUNDARY_8 = new L.geoJson(json_KOLKATABOUNDARY_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KOLKATABOUNDARY_8',
+            layerName: 'layer_KOLKATABOUNDARY_8',
+            pane: 'pane_KOLKATABOUNDARY_8',
+            onEachFeature: pop_KOLKATABOUNDARY_8,
+            style: style_KOLKATABOUNDARY_8_0,
+        });
+        bounds_group.addLayer(layer_KOLKATABOUNDARY_8);
+        map.addLayer(layer_KOLKATABOUNDARY_8);
+        function pop_STANDARDDEVIATIONELLIPSE2021_9(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_9_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_9',
+                opacity: 1,
+                color: 'rgba(255,127,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(114,155,111,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_9');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_9').style.zIndex = 409;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_9').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_9 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_9',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_9',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_9',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_9,
+            style: style_STANDARDDEVIATIONELLIPSE2021_9_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_9);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_9);
+        function pop_STANDARDDEVIATIONELLIPSE2011_10(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_10_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_10',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,113,88,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_10');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_10').style.zIndex = 410;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_10').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_10 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_10, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_10',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_10',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_10',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_10,
+            style: style_STANDARDDEVIATIONELLIPSE2011_10_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_10);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_10);
+        function pop_STANDARDDEVIATIONELLIPSE2001_11(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_11_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_11',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(125,139,143,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_11');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_11').style.zIndex = 411;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_11').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_11 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_11, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_11',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_11',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_11',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_11,
+            style: style_STANDARDDEVIATIONELLIPSE2001_11_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_11);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_11);
+        function pop_STANDARDDEVIATIONELLIPSE1991_12(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_12_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_12',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,178,151,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_12');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_12').style.zIndex = 412;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_12').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_12 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_12, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_12',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_12',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_12',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_12,
+            style: style_STANDARDDEVIATIONELLIPSE1991_12_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_12);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_12);
+        function pop_KOLKATAGRAVITYCENTER_13(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">YEAR</th>\
+                        <td class="visible-with-data" id="YEAR">' + (feature.properties['YEAR'] !== null ? autolinker.link(feature.properties['YEAR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_KOLKATAGRAVITYCENTER_13_0(feature) {
+            switch(String(feature.properties['YEAR'])) {
+                case '1991':
+                    return {
+                pane: 'pane_KOLKATAGRAVITYCENTER_13',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_KOLKATAGRAVITYCENTER_13',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_KOLKATAGRAVITYCENTER_13',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2021':
+                    return {
+                pane: 'pane_KOLKATAGRAVITYCENTER_13',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,128,1,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_KOLKATAGRAVITYCENTER_13');
+        map.getPane('pane_KOLKATAGRAVITYCENTER_13').style.zIndex = 413;
+        map.getPane('pane_KOLKATAGRAVITYCENTER_13').style['mix-blend-mode'] = 'normal';
+        var layer_KOLKATAGRAVITYCENTER_13 = new L.geoJson(json_KOLKATAGRAVITYCENTER_13, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KOLKATAGRAVITYCENTER_13',
+            layerName: 'layer_KOLKATAGRAVITYCENTER_13',
+            pane: 'pane_KOLKATAGRAVITYCENTER_13',
+            onEachFeature: pop_KOLKATAGRAVITYCENTER_13,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_KOLKATAGRAVITYCENTER_13_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_KOLKATAGRAVITYCENTER_13);
+        map.addLayer(layer_KOLKATAGRAVITYCENTER_13);
+        function pop_HOWRAHBOUNDARY_14(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_HOWRAHBOUNDARY_14_0() {
+            return {
+                pane: 'pane_HOWRAHBOUNDARY_14',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,207,80,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_HOWRAHBOUNDARY_14');
+        map.getPane('pane_HOWRAHBOUNDARY_14').style.zIndex = 414;
+        map.getPane('pane_HOWRAHBOUNDARY_14').style['mix-blend-mode'] = 'normal';
+        var layer_HOWRAHBOUNDARY_14 = new L.geoJson(json_HOWRAHBOUNDARY_14, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_HOWRAHBOUNDARY_14',
+            layerName: 'layer_HOWRAHBOUNDARY_14',
+            pane: 'pane_HOWRAHBOUNDARY_14',
+            onEachFeature: pop_HOWRAHBOUNDARY_14,
+            style: style_HOWRAHBOUNDARY_14_0,
+        });
+        bounds_group.addLayer(layer_HOWRAHBOUNDARY_14);
+        map.addLayer(layer_HOWRAHBOUNDARY_14);
+        function pop_STANDARDDEVIATIONELLIPSE2021_15(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_15_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_15',
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,207,80,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_15');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_15').style.zIndex = 415;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_15').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_15 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_15, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_15',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_15',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_15',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_15,
+            style: style_STANDARDDEVIATIONELLIPSE2021_15_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_15);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_15);
+        function pop_STANDARDDEVIATIONELLIPSE2011_16(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_16_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_16',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_16');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_16').style.zIndex = 416;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_16').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_16 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_16, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_16',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_16',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_16',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_16,
+            style: style_STANDARDDEVIATIONELLIPSE2011_16_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_16);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_16);
+        function pop_STANDARDDEVIATIONELLIPSE2001_17(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_17_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_17',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,158,23,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_17');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_17').style.zIndex = 417;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_17').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_17 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_17, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_17',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_17',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_17',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_17,
+            style: style_STANDARDDEVIATIONELLIPSE2001_17_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_17);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_17);
+        function pop_STANDARDDEVIATIONELLIPSE1991_18(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_18_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_18',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(141,90,153,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_18');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_18').style.zIndex = 418;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_18').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_18 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_18, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_18',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_18',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_18',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_18,
+            style: style_STANDARDDEVIATIONELLIPSE1991_18_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_18);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_18);
+        function pop_HOWRAHGRAVITYCENTER_19(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_HOWRAHGRAVITYCENTER_19_0(feature) {
+            switch(String(feature.properties['Year'])) {
+                case '1991':
+                    return {
+                pane: 'pane_HOWRAHGRAVITYCENTER_19',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_HOWRAHGRAVITYCENTER_19',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_HOWRAHGRAVITYCENTER_19',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2022':
+                    return {
+                pane: 'pane_HOWRAHGRAVITYCENTER_19',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,127,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,127,0,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_HOWRAHGRAVITYCENTER_19');
+        map.getPane('pane_HOWRAHGRAVITYCENTER_19').style.zIndex = 419;
+        map.getPane('pane_HOWRAHGRAVITYCENTER_19').style['mix-blend-mode'] = 'normal';
+        var layer_HOWRAHGRAVITYCENTER_19 = new L.geoJson(json_HOWRAHGRAVITYCENTER_19, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_HOWRAHGRAVITYCENTER_19',
+            layerName: 'layer_HOWRAHGRAVITYCENTER_19',
+            pane: 'pane_HOWRAHGRAVITYCENTER_19',
+            onEachFeature: pop_HOWRAHGRAVITYCENTER_19,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_HOWRAHGRAVITYCENTER_19_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_HOWRAHGRAVITYCENTER_19);
+        map.addLayer(layer_HOWRAHGRAVITYCENTER_19);
+        function pop_DURGAPURBOUNDARY_20(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_DURGAPURBOUNDARY_20_0() {
+            return {
+                pane: 'pane_DURGAPURBOUNDARY_20',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_DURGAPURBOUNDARY_20');
+        map.getPane('pane_DURGAPURBOUNDARY_20').style.zIndex = 420;
+        map.getPane('pane_DURGAPURBOUNDARY_20').style['mix-blend-mode'] = 'normal';
+        var layer_DURGAPURBOUNDARY_20 = new L.geoJson(json_DURGAPURBOUNDARY_20, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DURGAPURBOUNDARY_20',
+            layerName: 'layer_DURGAPURBOUNDARY_20',
+            pane: 'pane_DURGAPURBOUNDARY_20',
+            onEachFeature: pop_DURGAPURBOUNDARY_20,
+            style: style_DURGAPURBOUNDARY_20_0,
+        });
+        bounds_group.addLayer(layer_DURGAPURBOUNDARY_20);
+        map.addLayer(layer_DURGAPURBOUNDARY_20);
+        function pop_STANDARDDEVIATIONELLIPSE2021_21(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_21_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_21',
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,113,88,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_21');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_21').style.zIndex = 421;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_21').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_21 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_21, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_21',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_21',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_21',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_21,
+            style: style_STANDARDDEVIATIONELLIPSE2021_21_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_21);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_21);
+        function pop_STANDARDDEVIATIONELLIPSE2011_22(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_22_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_22',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(125,139,143,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_22');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_22').style.zIndex = 422;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_22').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_22 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_22, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_22',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_22',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_22',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_22,
+            style: style_STANDARDDEVIATIONELLIPSE2011_22_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_22);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_22);
+        function pop_STANDARDDEVIATIONELLIPSE2001_23(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_23_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_23',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,178,151,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_23');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_23').style.zIndex = 423;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_23').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_23 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_23, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_23',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_23',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_23',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_23,
+            style: style_STANDARDDEVIATIONELLIPSE2001_23_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_23);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_23);
+        function pop_STANDARDDEVIATIONELLIPSE1991_24(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_24_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_24',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_24');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_24').style.zIndex = 424;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_24').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_24 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_24, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_24',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_24',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_24',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_24,
+            style: style_STANDARDDEVIATIONELLIPSE1991_24_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_24);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_24);
+        function pop_DURGAPURGRAVITYCENTER_25(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_DURGAPURGRAVITYCENTER_25_0(feature) {
+            switch(String(feature.properties['Year'])) {
+                case '1991':
+                    return {
+                pane: 'pane_DURGAPURGRAVITYCENTER_25',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_DURGAPURGRAVITYCENTER_25',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_DURGAPURGRAVITYCENTER_25',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2021':
+                    return {
+                pane: 'pane_DURGAPURGRAVITYCENTER_25',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,127,0,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_DURGAPURGRAVITYCENTER_25');
+        map.getPane('pane_DURGAPURGRAVITYCENTER_25').style.zIndex = 425;
+        map.getPane('pane_DURGAPURGRAVITYCENTER_25').style['mix-blend-mode'] = 'normal';
+        var layer_DURGAPURGRAVITYCENTER_25 = new L.geoJson(json_DURGAPURGRAVITYCENTER_25, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DURGAPURGRAVITYCENTER_25',
+            layerName: 'layer_DURGAPURGRAVITYCENTER_25',
+            pane: 'pane_DURGAPURGRAVITYCENTER_25',
+            onEachFeature: pop_DURGAPURGRAVITYCENTER_25,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_DURGAPURGRAVITYCENTER_25_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_DURGAPURGRAVITYCENTER_25);
+        map.addLayer(layer_DURGAPURGRAVITYCENTER_25);
+        function pop_CHANDANNAGARBOUNDARY_26(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_CHANDANNAGARBOUNDARY_26_0() {
+            return {
+                pane: 'pane_CHANDANNAGARBOUNDARY_26',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,178,151,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_CHANDANNAGARBOUNDARY_26');
+        map.getPane('pane_CHANDANNAGARBOUNDARY_26').style.zIndex = 426;
+        map.getPane('pane_CHANDANNAGARBOUNDARY_26').style['mix-blend-mode'] = 'normal';
+        var layer_CHANDANNAGARBOUNDARY_26 = new L.geoJson(json_CHANDANNAGARBOUNDARY_26, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_CHANDANNAGARBOUNDARY_26',
+            layerName: 'layer_CHANDANNAGARBOUNDARY_26',
+            pane: 'pane_CHANDANNAGARBOUNDARY_26',
+            onEachFeature: pop_CHANDANNAGARBOUNDARY_26,
+            style: style_CHANDANNAGARBOUNDARY_26_0,
+        });
+        bounds_group.addLayer(layer_CHANDANNAGARBOUNDARY_26);
+        map.addLayer(layer_CHANDANNAGARBOUNDARY_26);
+        function pop_STANDARDDEVIATIONELLIPSE2021_27(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_27_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_27',
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_27');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_27').style.zIndex = 427;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_27').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_27 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_27, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_27',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_27',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_27',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_27,
+            style: style_STANDARDDEVIATIONELLIPSE2021_27_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_27);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_27);
+        function pop_STANDARDDEVIATIONELLIPSE2011_28(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_28_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_28',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,158,23,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_28');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_28').style.zIndex = 428;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_28').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_28 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_28, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_28',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_28',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_28',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_28,
+            style: style_STANDARDDEVIATIONELLIPSE2011_28_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_28);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_28);
+        function pop_STANDARDDEVIATIONELLIPSE2001_29(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_29_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_29',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(141,90,153,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_29');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_29').style.zIndex = 429;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_29').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_29 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_29, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_29',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_29',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_29',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_29,
+            style: style_STANDARDDEVIATIONELLIPSE2001_29_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_29);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_29);
+        function pop_STANDARDDEVIATIONELLIPSE1991_30(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_30_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_30',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_30');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_30').style.zIndex = 430;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_30').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_30 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_30, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_30',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_30',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_30',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_30,
+            style: style_STANDARDDEVIATIONELLIPSE1991_30_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_30);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_30);
+        function pop_CHANDANNAGARGRAVITYCENTER_31(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Year</th>\
+                        <td class="visible-with-data" id="Year">' + (feature.properties['Year'] !== null ? autolinker.link(feature.properties['Year'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_CHANDANNAGARGRAVITYCENTER_31_0(feature) {
+            switch(String(feature.properties['Year'])) {
+                case '1991':
+                    return {
+                pane: 'pane_CHANDANNAGARGRAVITYCENTER_31',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_CHANDANNAGARGRAVITYCENTER_31',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_CHANDANNAGARGRAVITYCENTER_31',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2021':
+                    return {
+                pane: 'pane_CHANDANNAGARGRAVITYCENTER_31',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,128,1,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_CHANDANNAGARGRAVITYCENTER_31');
+        map.getPane('pane_CHANDANNAGARGRAVITYCENTER_31').style.zIndex = 431;
+        map.getPane('pane_CHANDANNAGARGRAVITYCENTER_31').style['mix-blend-mode'] = 'normal';
+        var layer_CHANDANNAGARGRAVITYCENTER_31 = new L.geoJson(json_CHANDANNAGARGRAVITYCENTER_31, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_CHANDANNAGARGRAVITYCENTER_31',
+            layerName: 'layer_CHANDANNAGARGRAVITYCENTER_31',
+            pane: 'pane_CHANDANNAGARGRAVITYCENTER_31',
+            onEachFeature: pop_CHANDANNAGARGRAVITYCENTER_31,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_CHANDANNAGARGRAVITYCENTER_31_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_CHANDANNAGARGRAVITYCENTER_31);
+        map.addLayer(layer_CHANDANNAGARGRAVITYCENTER_31);
+        function pop_BIDHANNAGARBOUNDARY_32(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_BIDHANNAGARBOUNDARY_32_0() {
+            return {
+                pane: 'pane_BIDHANNAGARBOUNDARY_32',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(125,139,143,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_BIDHANNAGARBOUNDARY_32');
+        map.getPane('pane_BIDHANNAGARBOUNDARY_32').style.zIndex = 432;
+        map.getPane('pane_BIDHANNAGARBOUNDARY_32').style['mix-blend-mode'] = 'normal';
+        var layer_BIDHANNAGARBOUNDARY_32 = new L.geoJson(json_BIDHANNAGARBOUNDARY_32, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BIDHANNAGARBOUNDARY_32',
+            layerName: 'layer_BIDHANNAGARBOUNDARY_32',
+            pane: 'pane_BIDHANNAGARBOUNDARY_32',
+            onEachFeature: pop_BIDHANNAGARBOUNDARY_32,
+            style: style_BIDHANNAGARBOUNDARY_32_0,
+        });
+        bounds_group.addLayer(layer_BIDHANNAGARBOUNDARY_32);
+        map.addLayer(layer_BIDHANNAGARBOUNDARY_32);
+        function pop_STANDARDDEVIATIONELLIPSE2021_33(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_33_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_33',
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(125,139,143,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_33');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_33').style.zIndex = 433;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_33').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_33 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_33, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_33',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_33',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_33',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_33,
+            style: style_STANDARDDEVIATIONELLIPSE2021_33_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_33);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_33);
+        function pop_STANDARDDEVIATIONELLIPSE2011_34(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_34_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_34',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,89,137,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_34');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_34').style.zIndex = 434;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_34').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_34 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_34, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_34',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_34',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_34',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_34,
+            style: style_STANDARDDEVIATIONELLIPSE2011_34_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_34);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_34);
+        function pop_STANDARDDEVIATIONELLIPSE2001_35(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_35_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_35',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,178,151,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_35');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_35').style.zIndex = 435;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_35').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_35 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_35, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_35',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_35',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_35',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_35,
+            style: style_STANDARDDEVIATIONELLIPSE2001_35_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_35);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_35);
+        function pop_STANDARDDEVIATIONELLIPSE1991_36(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">XStdDist</th>\
+                        <td class="visible-with-data" id="XStdDist">' + (feature.properties['XStdDist'] !== null ? autolinker.link(feature.properties['XStdDist'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">YStdDist</th>\
+                        <td class="visible-with-data" id="YStdDist">' + (feature.properties['YStdDist'] !== null ? autolinker.link(feature.properties['YStdDist'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_36_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_36',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_36');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_36').style.zIndex = 436;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_36').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_36 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_36, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_36',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_36',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_36',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_36,
+            style: style_STANDARDDEVIATIONELLIPSE1991_36_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_36);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_36);
+        function pop_BIDHANNAGARGRAVITYCENTER_37(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Year</th>\
+                        <td class="visible-with-data" id="Year">' + (feature.properties['Year'] !== null ? autolinker.link(feature.properties['Year'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_BIDHANNAGARGRAVITYCENTER_37_0(feature) {
+            switch(String(feature.properties['Year'])) {
+                case '1991':
+                    return {
+                pane: 'pane_BIDHANNAGARGRAVITYCENTER_37',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_BIDHANNAGARGRAVITYCENTER_37',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_BIDHANNAGARGRAVITYCENTER_37',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2021':
+                    return {
+                pane: 'pane_BIDHANNAGARGRAVITYCENTER_37',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,128,1,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_BIDHANNAGARGRAVITYCENTER_37');
+        map.getPane('pane_BIDHANNAGARGRAVITYCENTER_37').style.zIndex = 437;
+        map.getPane('pane_BIDHANNAGARGRAVITYCENTER_37').style['mix-blend-mode'] = 'normal';
+        var layer_BIDHANNAGARGRAVITYCENTER_37 = new L.geoJson(json_BIDHANNAGARGRAVITYCENTER_37, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BIDHANNAGARGRAVITYCENTER_37',
+            layerName: 'layer_BIDHANNAGARGRAVITYCENTER_37',
+            pane: 'pane_BIDHANNAGARGRAVITYCENTER_37',
+            onEachFeature: pop_BIDHANNAGARGRAVITYCENTER_37,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_BIDHANNAGARGRAVITYCENTER_37_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_BIDHANNAGARGRAVITYCENTER_37);
+        map.addLayer(layer_BIDHANNAGARGRAVITYCENTER_37);
+        function pop_ASANSOLBOUNDARY_38(feature, layer) {
+            var popupContent = '<table>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_ASANSOLBOUNDARY_38_0() {
+            return {
+                pane: 'pane_ASANSOLBOUNDARY_38',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,113,88,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_ASANSOLBOUNDARY_38');
+        map.getPane('pane_ASANSOLBOUNDARY_38').style.zIndex = 438;
+        map.getPane('pane_ASANSOLBOUNDARY_38').style['mix-blend-mode'] = 'normal';
+        var layer_ASANSOLBOUNDARY_38 = new L.geoJson(json_ASANSOLBOUNDARY_38, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_ASANSOLBOUNDARY_38',
+            layerName: 'layer_ASANSOLBOUNDARY_38',
+            pane: 'pane_ASANSOLBOUNDARY_38',
+            onEachFeature: pop_ASANSOLBOUNDARY_38,
+            style: style_ASANSOLBOUNDARY_38_0,
+        });
+        bounds_group.addLayer(layer_ASANSOLBOUNDARY_38);
+        map.addLayer(layer_ASANSOLBOUNDARY_38);
+        function pop_STANDARDDEVIATIONELLIPSE2021_39(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2021_39_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2021_39',
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2021_39');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_39').style.zIndex = 439;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2021_39').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2021_39 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2021_39, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2021_39',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2021_39',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2021_39',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2021_39,
+            style: style_STANDARDDEVIATIONELLIPSE2021_39_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_39);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2021_39);
+        function pop_STANDARDDEVIATIONELLIPSE2011_40(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2011_40_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2011_40',
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,158,23,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2011_40');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_40').style.zIndex = 440;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2011_40').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2011_40 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2011_40, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2011_40',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2011_40',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2011_40',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2011_40,
+            style: style_STANDARDDEVIATIONELLIPSE2011_40_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_40);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2011_40);
+        function pop_STANDARDDEVIATIONELLIPSE2001_41(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE2001_41_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE2001_41',
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(141,90,153,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE2001_41');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_41').style.zIndex = 441;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE2001_41').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE2001_41 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE2001_41, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE2001_41',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE2001_41',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE2001_41',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE2001_41,
+            style: style_STANDARDDEVIATIONELLIPSE2001_41_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_41);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE2001_41);
+        function pop_STANDARDDEVIATIONELLIPSE1991_42(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Rotation</th>\
+                        <td class="visible-with-data" id="Rotation">' + (feature.properties['Rotation'] !== null ? autolinker.link(feature.properties['Rotation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_STANDARDDEVIATIONELLIPSE1991_42_0() {
+            return {
+                pane: 'pane_STANDARDDEVIATIONELLIPSE1991_42',
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(114,155,111,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STANDARDDEVIATIONELLIPSE1991_42');
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_42').style.zIndex = 442;
+        map.getPane('pane_STANDARDDEVIATIONELLIPSE1991_42').style['mix-blend-mode'] = 'normal';
+        var layer_STANDARDDEVIATIONELLIPSE1991_42 = new L.geoJson(json_STANDARDDEVIATIONELLIPSE1991_42, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STANDARDDEVIATIONELLIPSE1991_42',
+            layerName: 'layer_STANDARDDEVIATIONELLIPSE1991_42',
+            pane: 'pane_STANDARDDEVIATIONELLIPSE1991_42',
+            onEachFeature: pop_STANDARDDEVIATIONELLIPSE1991_42,
+            style: style_STANDARDDEVIATIONELLIPSE1991_42_0,
+        });
+        bounds_group.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_42);
+        map.addLayer(layer_STANDARDDEVIATIONELLIPSE1991_42);
+        function pop_ASANSOLGRAVITYCENTER_43(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">YEAR</th>\
+                        <td class="visible-with-data" id="YEAR">' + (feature.properties['YEAR'] !== null ? autolinker.link(feature.properties['YEAR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_ASANSOLGRAVITYCENTER_43_0(feature) {
+            switch(String(feature.properties['YEAR'])) {
+                case '1991':
+                    return {
+                pane: 'pane_ASANSOLGRAVITYCENTER_43',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,14,1,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2001':
+                    return {
+                pane: 'pane_ASANSOLGRAVITYCENTER_43',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,246,172,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,246,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2011':
+                    return {
+                pane: 'pane_ASANSOLGRAVITYCENTER_43',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(83,255,3,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,255,3,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2021':
+                    return {
+                pane: 'pane_ASANSOLGRAVITYCENTER_43',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(255,128,1,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,128,1,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_ASANSOLGRAVITYCENTER_43');
+        map.getPane('pane_ASANSOLGRAVITYCENTER_43').style.zIndex = 443;
+        map.getPane('pane_ASANSOLGRAVITYCENTER_43').style['mix-blend-mode'] = 'normal';
+        var layer_ASANSOLGRAVITYCENTER_43 = new L.geoJson(json_ASANSOLGRAVITYCENTER_43, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_ASANSOLGRAVITYCENTER_43',
+            layerName: 'layer_ASANSOLGRAVITYCENTER_43',
+            pane: 'pane_ASANSOLGRAVITYCENTER_43',
+            onEachFeature: pop_ASANSOLGRAVITYCENTER_43,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_ASANSOLGRAVITYCENTER_43_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_ASANSOLGRAVITYCENTER_43);
+        map.addLayer(layer_ASANSOLGRAVITYCENTER_43);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'ASANSOL GRAVITY CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/ASANSOLGRAVITYCENTER_43_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/ASANSOLGRAVITYCENTER_43_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/ASANSOLGRAVITYCENTER_43_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/ASANSOLGRAVITYCENTER_43_20213.png" /></td><td>2021</td></tr></table>': layer_ASANSOLGRAVITYCENTER_43,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_42.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_42,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_41.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_41,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_40.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_40,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_39.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_39,'<img src="legend/ASANSOLBOUNDARY_38.png" /> ASANSOL BOUNDARY': layer_ASANSOLBOUNDARY_38,'BIDHANNAGAR GRAVITY CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/BIDHANNAGARGRAVITYCENTER_37_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/BIDHANNAGARGRAVITYCENTER_37_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/BIDHANNAGARGRAVITYCENTER_37_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/BIDHANNAGARGRAVITYCENTER_37_20213.png" /></td><td>2021</td></tr></table>': layer_BIDHANNAGARGRAVITYCENTER_37,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_36.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_36,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_35.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_35,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_34.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_34,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_33.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_33,'<img src="legend/BIDHANNAGARBOUNDARY_32.png" /> BIDHANNAGAR BOUNDARY': layer_BIDHANNAGARBOUNDARY_32,'CHANDANNAGAR GRAVITY CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/CHANDANNAGARGRAVITYCENTER_31_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/CHANDANNAGARGRAVITYCENTER_31_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/CHANDANNAGARGRAVITYCENTER_31_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/CHANDANNAGARGRAVITYCENTER_31_20213.png" /></td><td>2021</td></tr></table>': layer_CHANDANNAGARGRAVITYCENTER_31,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_30.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_30,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_29.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_29,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_28.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_28,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_27.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_27,'<img src="legend/CHANDANNAGARBOUNDARY_26.png" /> CHANDANNAGAR BOUNDARY': layer_CHANDANNAGARBOUNDARY_26,'DURGAPUR GRAVITY CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/DURGAPURGRAVITYCENTER_25_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/DURGAPURGRAVITYCENTER_25_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/DURGAPURGRAVITYCENTER_25_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/DURGAPURGRAVITYCENTER_25_20213.png" /></td><td>2021</td></tr></table>': layer_DURGAPURGRAVITYCENTER_25,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_24.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_24,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_23.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_23,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_22.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_22,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_21.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_21,'<img src="legend/DURGAPURBOUNDARY_20.png" /> DURGAPUR BOUNDARY': layer_DURGAPURBOUNDARY_20,'HOWRAH GRAVITY CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/HOWRAHGRAVITYCENTER_19_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/HOWRAHGRAVITYCENTER_19_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/HOWRAHGRAVITYCENTER_19_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/HOWRAHGRAVITYCENTER_19_20213.png" /></td><td>2021</td></tr></table>': layer_HOWRAHGRAVITYCENTER_19,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_18.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_18,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_17.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_17,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_16.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_16,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_15.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_15,'<img src="legend/HOWRAHBOUNDARY_14.png" /> HOWRAH BOUNDARY': layer_HOWRAHBOUNDARY_14,'KOLKATA GRAVITY  CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/KOLKATAGRAVITYCENTER_13_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/KOLKATAGRAVITYCENTER_13_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/KOLKATAGRAVITYCENTER_13_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/KOLKATAGRAVITYCENTER_13_20213.png" /></td><td>2021</td></tr></table>': layer_KOLKATAGRAVITYCENTER_13,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_12.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_12,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_11.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_11,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_10.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_10,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_9.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_9,'<img src="legend/KOLKATABOUNDARY_8.png" /> KOLKATA BOUNDARY': layer_KOLKATABOUNDARY_8,'SILIGURI GRAVITY CENTER<br /><table><tr><td style="text-align: center;"><img src="legend/SILIGURIGRAVITYCENTER_7_19910.png" /></td><td>1991</td></tr><tr><td style="text-align: center;"><img src="legend/SILIGURIGRAVITYCENTER_7_20011.png" /></td><td>2001</td></tr><tr><td style="text-align: center;"><img src="legend/SILIGURIGRAVITYCENTER_7_20112.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/SILIGURIGRAVITYCENTER_7_20213.png" /></td><td>2021</td></tr></table>': layer_SILIGURIGRAVITYCENTER_7,'<img src="legend/STANDARDDEVIATIONELLIPSE1991_6.png" /> STANDARD DEVIATION ELLIPSE 1991': layer_STANDARDDEVIATIONELLIPSE1991_6,'<img src="legend/STANDARDDEVIATIONELLIPSE2001_5.png" /> STANDARD DEVIATION ELLIPSE 2001': layer_STANDARDDEVIATIONELLIPSE2001_5,'<img src="legend/STANDARDDEVIATIONELLIPSE2011_4.png" /> STANDARD DEVIATION ELLIPSE 2011': layer_STANDARDDEVIATIONELLIPSE2011_4,'<img src="legend/STANDARDDEVIATIONELLIPSE2021_3.png" /> STANDARD DEVIATION ELLIPSE 2021': layer_STANDARDDEVIATIONELLIPSE2021_3,'<img src="legend/SILIGURIBOUNDARY_2.png" /> SILIGURI BOUNDARY': layer_SILIGURIBOUNDARY_2,'<img src="legend/WESTBENGALBOUNDARY_1.png" /> WEST BENGAL  BOUNDARY': layer_WESTBENGALBOUNDARY_1,"OpenStreetMap": layer_OpenStreetMap_0,}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
